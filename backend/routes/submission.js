@@ -1,10 +1,11 @@
-const express = require('express');
+import express from 'express';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { submitQuiz, getQuizSubmissions, getAllSubmissions } from '../controllers/submissionController.js';
+
 const router = express.Router();
-const authMiddleware = require('../middleware/authMiddleware');
-const submissionController = require('../controllers/submissionController');
 
-router.post('/', submissionController.submitQuiz);
-router.get('/quizzes/:quizId', authMiddleware, submissionController.getQuizSubmissions);
-router.get('/', authMiddleware, submissionController.getAllSubmissions);
+router.post('/', submitQuiz);
+router.get('/quizzes/:quizId', authMiddleware, getQuizSubmissions);
+router.get('/', authMiddleware, getAllSubmissions);
 
-module.exports = router;
+export default router;

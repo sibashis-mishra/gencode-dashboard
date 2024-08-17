@@ -1,6 +1,6 @@
-const Quiz = require('../models/Quiz');
+import Quiz from '../models/Quiz.js';
 
-exports.createQuiz = async (req, res) => {
+export const createQuiz = async (req, res) => {
   try {
     const { title, questions } = req.body;
     const quiz = new Quiz({ title, creator: req.user._id, questions });
@@ -12,7 +12,7 @@ exports.createQuiz = async (req, res) => {
   }
 };
 
-exports.getAllQuizzes = async (req, res) => {
+export const getAllQuizzes = async (req, res) => {
   try {
     const quizzes = await Quiz.find();
     res.json(quizzes);
@@ -22,7 +22,7 @@ exports.getAllQuizzes = async (req, res) => {
   }
 };
 
-exports.updateQuiz = async (req, res) => {
+export const updateQuiz = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, questions } = req.body;
@@ -51,35 +51,33 @@ exports.updateQuiz = async (req, res) => {
   }
 };
 
-exports.getQuizById = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const quiz = await Quiz.findById(id);
-      if (!quiz) {
-        return res.status(404).json({ message: 'Quiz not found'   
-   });
-      }
-      res.json(quiz);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message:   
-   'Server error' });
+export const getQuizById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const quiz = await Quiz.findById(id);
+    if (!quiz) {
+      return res.status(404).json({ message: 'Quiz not found' });
     }
-  };
+    res.json(quiz);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
-  exports.deleteQuiz = async (req, res) => {
-    try {
-      const { id } = req.params;
-  
-      const quiz = await Quiz.findByIdAndDelete(id);
-  
-      if (!quiz) {
-        return res.status(404).json({ message: 'Quiz not found' });
-      }
-  
-      res.json({ message: 'Quiz deleted successfully' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error' });
+export const deleteQuiz = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const quiz = await Quiz.findByIdAndDelete(id);
+
+    if (!quiz) {
+      return res.status(404).json({ message: 'Quiz not found' });
     }
-  };
+
+    res.json({ message: 'Quiz deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
