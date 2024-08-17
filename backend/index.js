@@ -1,35 +1,44 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
+require("dotenv").config();
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
 
-const authRoutes = require('./routes/auth');
-const quizRoutes = require('./routes/quiz');
-const submissionRoutes = require('./routes/submission');
+const authRoutes = require("./routes/auth");
+const quizRoutes = require("./routes/quiz");
+const submissionRoutes = require("./routes/submission");
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors({
-    origin: [process.env.LOCAL_FRONTEND_URL, process.env.PROD_FRONTEND_URL, 'https://gencode-dashboard.vercel.app']
-  }));
+app.use(
+  cors({
+    origin: [
+      process.env.LOCAL_FRONTEND_URL,
+      process.env.PROD_FRONTEND_URL,
+      "https://gencode-dashboard.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
+mongoose
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error('MongoDB connection error:', err));
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/quizzes', quizRoutes);
-app.use('/api/submissions', submissionRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/quizzes", quizRoutes);
+app.use("/api/submissions", submissionRoutes);
 
 app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+  console.log(`Server listening on port ${port}`);
 });
