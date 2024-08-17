@@ -5,7 +5,7 @@ import Sidebar from './Sidebar';
 import AppHeader from './Header';
 import Home from './Home';
 import Quizzes from './Quizzes';
-import Page3 from './Page3';
+import Submissions from './Submissions';
 import { Routes, Route } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -40,7 +40,7 @@ const DashboardLayout = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/quizzes" element={<Quizzes />} />
-            <Route path="/page3" element={<Page3 />} />
+            <Route path="/submissions" element={<Submissions />} />
           </Routes>
         </Content>
       </Layout>

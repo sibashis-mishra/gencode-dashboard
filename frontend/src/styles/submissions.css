@@ -1,0 +1,24 @@
+.submissions-container {
+    padding: 16px;
+  }
+  
+  .score-distribution-card {
+    position: relative; /* Set the position to relative */
+    margin-bottom: 16px;
+    padding: 16px;
+    background-color: #f7f7f7;
+  }
+  
+  .score-distribution-buttons {
+    position: absolute; /* Position absolutely */
+    top: 16px; /* Distance from the top of the card */
+    right: 16px; /* Distance from the right edge of the card */
+    display: flex;
+    gap: 8px; /* Space between buttons */
+  }
+  
+  .score-distribution-item {
+    margin-bottom: 8px;
+    font-size: 18px;
+  }
+  
