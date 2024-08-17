@@ -1,11 +1,13 @@
 // src/utils/api.js
-import axios from 'axios';
+import axios from "axios";
+
+axios.defaults.withCredentials = true;
 
 // Axios instance for authenticated requests
 const authApi = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_API_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -13,14 +15,14 @@ const authApi = axios.create({
 const nonAuthApi = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_API_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Add a request interceptor to authApi to include the token in every request
 authApi.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -34,10 +36,12 @@ authApi.interceptors.request.use(
 // Utility functions for GET requests
 export const get = async (url, authenticated = true) => {
   try {
-    const response = await (authenticated ? authApi.get(url) : nonAuthApi.get(url));
+    const response = await (authenticated
+      ? authApi.get(url)
+      : nonAuthApi.get(url));
     return response;
   } catch (error) {
-    console.error('GET request error:', error);
+    console.error("GET request error:", error);
     throw error;
   }
 };
@@ -45,10 +49,12 @@ export const get = async (url, authenticated = true) => {
 // Utility functions for POST requests
 export const post = async (url, data, authenticated = true) => {
   try {
-    const response = await (authenticated ? authApi.post(url, data) : nonAuthApi.post(url, data));
+    const response = await (authenticated
+      ? authApi.post(url, data)
+      : nonAuthApi.post(url, data));
     return response;
   } catch (error) {
-    console.error('POST request error:', error);
+    console.error("POST request error:", error);
     throw error;
   }
 };
@@ -56,22 +62,25 @@ export const post = async (url, data, authenticated = true) => {
 // Utility functions for DELETE requests
 export const del = async (url, authenticated = true) => {
   try {
-    const response = await (authenticated ? authApi.delete(url) : nonAuthApi.delete(url));
+    const response = await (authenticated
+      ? authApi.delete(url)
+      : nonAuthApi.delete(url));
     return response;
   } catch (error) {
-    console.error('DELETE request error:', error);
+    console.error("DELETE request error:", error);
     throw error;
   }
 };
 
-
 // Utility functions for PUT requests
 export const put = async (url, data, authenticated = true) => {
-    try {
-      const response = await (authenticated ? authApi.put(url, data) : nonAuthApi.put(url, data));
-      return response;
-    } catch (error) {
-      console.error('PUT request error:', error);
-      throw error;
-    }
-  };
+  try {
+    const response = await (authenticated
+      ? authApi.put(url, data)
+      : nonAuthApi.put(url, data));
+    return response;
+  } catch (error) {
+    console.error("PUT request error:", error);
+    throw error;
+  }
+};
