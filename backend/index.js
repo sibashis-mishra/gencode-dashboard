@@ -12,7 +12,7 @@ const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:3000', 'https://gencode-dashboard.com']
+    origin: [process.env.LOCAL_FRONTEND_URL, process.env.PROD_FRONTEND_URL]
   }));
 
 app.use(express.json());
