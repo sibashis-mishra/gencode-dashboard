@@ -1,11 +1,13 @@
-require("dotenv").config();
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
+import dotenv from 'dotenv';
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
 
-const authRoutes = require("./routes/auth");
-const quizRoutes = require("./routes/quiz");
-const submissionRoutes = require("./routes/submission");
+import authRoutes from './routes/auth.js';
+import quizRoutes from './routes/quiz.js';
+import submissionRoutes from './routes/submission.js';
+
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -14,7 +16,7 @@ const port = process.env.PORT || 5000;
 app.use(
   cors({
     origin: [
-      "https://gencode-dashboard.vercel.app/",
+      "https://gencode-dashboard.vercel.app",
       "http://localhost:3000"
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -26,7 +28,7 @@ app.use(express.json());
 
 // Connect to MongoDB
 mongoose
-  .connect(process.env.MONGODB_URI || 'mongodb+srv://sibashismishra001:TUwfTC52CBQLfsJM@forms.cenrv.mongodb.net/Forms', {
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

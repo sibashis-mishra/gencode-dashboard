@@ -1,8 +1,8 @@
-const User = require('../models/User');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import User from '../models/User.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
-exports.registerUser = async (req, res) => {
+export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     const existingUser = await User.findOne({ email });
@@ -20,7 +20,7 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-exports.loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -39,7 +39,7 @@ exports.loginUser = async (req, res) => {
   }
 };
 
-exports.validateToken = async (req, res) => {
+export const validateToken = async (req, res) => {
   try {
     const { token } = req.body;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -51,9 +51,9 @@ exports.validateToken = async (req, res) => {
   } catch (error) {
     res.status(401).json({ message: 'Token validation failed' });
   }
-}
+};
 
-exports.getUserById = async (req, res) => {
+export const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
     const user = await User.findById(id).select('name'); // Adjust as needed
