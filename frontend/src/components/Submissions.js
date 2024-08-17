@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import '../styles/submissions.css'; // Import the CSS file
 
 const Submissions = () => {
@@ -140,6 +141,7 @@ const Submissions = () => {
           type="primary"
           onClick={handleBackToQuizzes}
           className="back-to-quizzes-button"
+          icon={<ArrowLeftOutlined />}
         >
           Back to Quizzes
         </Button>
