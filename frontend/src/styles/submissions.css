@@ -1,35 +1,45 @@
-/* submissions.css */
-
 .submissions-container {
-  padding: 16px;
+  padding: 20px;
 }
 
-.score-distribution-card {
-  position: relative; /* Set the position to relative to allow absolute positioning of buttons */
-  margin-bottom: 16px;
-  padding: 16px;
-  background-color: #f7f7f7;
-}
-
-.score-distribution-buttons {
-  position: absolute; /* Position absolutely within the card */
-  top: 16px; /* Distance from the top of the card */
-  right: 16px; /* Distance from the right edge of the card */
+.header-controls {
   display: flex;
-  gap: 8px; /* Space between buttons */
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.export-button {
-  font-size: 14px; /* Adjust the font size of the buttons */
-  padding: 8px 16px; /* Add some padding for a better look */
+.total-submissions {
+  font-size: 16px;
+  font-weight: bold;
 }
 
-.score-distribution-item {
-  margin-bottom: 8px;
-  font-size: 18px; /* Adjust font size as needed */
+.action-buttons {
+  display: flex;
+  gap: 10px;
 }
 
-/* styles/submissions.css */
-.back-to-quizzes-button {
-  margin-bottom: 16px;
+.filters-modal .ant-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Space between filter fields */
 }
+
+.score-distribution-modal .ant-modal-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.score-distribution-modal .ant-modal-footer {
+  display: none; /* Hide the default footer */
+}
+
+.ant-modal-footer {
+  display: none; /* Hide the default footer in case it gets added by the Ant Design modal */
+}
+
+.filter-field {
+  margin-bottom: 16px; /* Space between filter fields */
+}
+
