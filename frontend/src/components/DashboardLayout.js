@@ -4,8 +4,8 @@ import { Layout, theme } from 'antd';
 import Sidebar from './Sidebar';
 import AppHeader from './Header';
 import Home from './Home';
-import Page2 from './Page2';
-import Page3 from './Page3';
+import Quizzes from './Quizzes';
+import Submissions from './Submissions';
 import { Routes, Route } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -39,8 +39,8 @@ const DashboardLayout = () => {
         >
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/page2" element={<Page2 />} />
-            <Route path="/page3" element={<Page3 />} />
+            <Route path="/quizzes" element={<Quizzes />} />
+            <Route path="/submissions" element={<Submissions />} />
           </Routes>
         </Content>
       </Layout>

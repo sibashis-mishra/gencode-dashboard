@@ -1,0 +1,45 @@
+.submissions-container {
+  padding: 20px;
+}
+
+.header-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.total-submissions {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.filters-modal .ant-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Space between filter fields */
+}
+
+.score-distribution-modal .ant-modal-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.score-distribution-modal .ant-modal-footer {
+  display: none; /* Hide the default footer */
+}
+
+.ant-modal-footer {
+  display: none; /* Hide the default footer in case it gets added by the Ant Design modal */
+}
+
+.filter-field {
+  margin-bottom: 16px; /* Space between filter fields */
+}
+

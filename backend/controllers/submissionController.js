@@ -41,3 +41,21 @@ exports.getQuizSubmissions = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   };
+
+  exports.getAllSubmissions = async (req, res) => {
+    try {
+        const submissions = await Submission.find({}).populate('quiz'); // Fetch all submissions and populate quiz details
+
+        if (!submissions) {
+            return res.status(404).json({ message: 'No submissions found' });
+        }
+
+        // Sort submissions by submittedAt field
+        submissions.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+
+        res.status(200).json(submissions);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};

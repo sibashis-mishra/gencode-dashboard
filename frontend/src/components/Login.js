@@ -48,9 +48,9 @@ const Login = () => {
           <Form.Item className="login-button-wrapper">
             <Button type="primary" htmlType="submit">Log in</Button>
           </Form.Item>
-          <Form.Item>
+          {/* <Form.Item>
             Don't have an account? <a href="/register">Register</a>
-          </Form.Item>
+          </Form.Item> */}
         </Form>
       </div>
     </div>
