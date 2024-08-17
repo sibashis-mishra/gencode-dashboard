@@ -76,8 +76,12 @@ const Quizzes = () => {
   };
 
   const handleShare = (id) => {
-    // Share quiz logic
+    // Generate a shareable link or an invitation
+    const shareLink = `${window.location.origin}/take-quiz/${id}`;
+    navigator.clipboard.writeText(shareLink);
+    message.success('Quiz link copied to clipboard!');
   };
+  
 
   const handleShowSubmissions = (id) => {
     // Navigate to submissions page or open modal to show submissions
