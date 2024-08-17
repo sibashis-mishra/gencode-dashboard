@@ -137,7 +137,7 @@ const CreateQuizCard = ({ onCreate }) => {
 
                     <Form.Item
                       {...restField}
-                      name={[name, 'score']}
+                      name={[name, 'points']}
                       fieldKey={[fieldKey, 'score']}
                       label="Score"
                       rules={[{ required: true, message: 'Please input the score for this question!' }]}

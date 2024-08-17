@@ -26,8 +26,19 @@ exports.updateQuiz = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, questions } = req.body;
+    const userId = req.user._id; // Assuming `req.user` contains the logged-in user's information
 
-    const quiz = await Quiz.findByIdAndUpdate(id, { title, questions }, { new: true });
+    // Find and update the quiz
+    const quiz = await Quiz.findByIdAndUpdate(
+      id,
+      { 
+        title, 
+        questions,
+        updatedAt: Date.now(), // Update the timestamp
+        updatedBy: userId // Set the user who made the update
+      },
+      { new: true }
+    );
 
     if (!quiz) {
       return res.status(404).json({ message: 'Quiz not found' });
