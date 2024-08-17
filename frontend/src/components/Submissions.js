@@ -16,11 +16,17 @@ const Submissions = () => {
 
   useEffect(() => {
     const fetchSubmissions = async () => {
-      console.log('Fetching submissions for quizId:', quizId); // Log the quizId
       try {
-        const response = await get(`/submissions/quizzes/${quizId}`);
-        console.log('Fetched submissions:', response.data); // Log the fetched data
-        setSubmissions(response.data);
+        const endpoint = quizId ? `/submissions/quizzes/${quizId}` : '/submissions';
+        const response = await get(endpoint);
+  
+        // Ensure that quizName is extracted from the quiz object
+        const submissionsWithQuizName = response.data.map(submission => ({
+          ...submission,
+          quizName: submission.quiz ? submission.quiz.title : '[Deleted]', // Handle missing quiz
+        }));
+  
+        setSubmissions(submissionsWithQuizName);
       } catch (error) {
         console.error('Failed to fetch submissions', error);
         message.error('Failed to load submissions');
@@ -31,7 +37,7 @@ const Submissions = () => {
   
     fetchSubmissions();
   }, [quizId]);
-
+  
   // Calculate score distribution
   const calculateScoreDistribution = () => {
     const distribution = {};
@@ -54,7 +60,14 @@ const Submissions = () => {
     }))
     .sort((a, b) => b.score - a.score); // Sort by score in descending order
 
+  // Define columns conditionally
   const columns = [
+    ...(quizId ? [] : [{
+      title: 'Quiz Name',
+      dataIndex: 'quizName',
+      key: 'quizName',
+      sorter: (a, b) => a.quizName.localeCompare(b.quizName), // Sort alphabetically
+    }]),
     {
       title: 'Name',
       dataIndex: 'user',
@@ -91,8 +104,14 @@ const Submissions = () => {
 
   const handleExportPDF = () => {
     const doc = new jsPDF();
-    const tableColumn = ["Name", "Score", "Submission Date"];
+    const tableColumn = [
+      ...(quizId ? [] : ["Quiz Name"]),
+      "Name",
+      "Score",
+      "Submission Date"
+    ];
     const tableRows = submissions.map(submission => [
+      ...(quizId ? [] : submission.quizName),
       submission.user,
       submission.score,
       new Date(submission.submittedAt).toLocaleString(),

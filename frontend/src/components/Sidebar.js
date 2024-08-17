@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu, Layout } from 'antd';
 import { UserOutlined, FileTextOutlined, InboxOutlined, LogoutOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import logo from '../assets/default-monochrome.svg';
 import { useAuth } from '../context/AuthContext';
 
@@ -9,8 +9,8 @@ const { Sider } = Layout;
 
 const Sidebar = ({ collapsed }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout } = useAuth();
-  const [quizId, setQuizId] = useState(0)
 
   const handleLogout = () => {
     logout();
@@ -20,11 +20,6 @@ const Sidebar = ({ collapsed }) => {
   const handleMenuClick = ({ key }) => {
     if (key === 'logout') {
       handleLogout();
-    } else if (key.startsWith('/submissions/')) {
-      // Assuming the key for submissions is structured like "/submissions/quizId"
-      const id = key.split('/submissions/')[1];
-      setQuizId(id)
-      navigate(`/submissions?quizId=${id}`);
     } else {
       navigate(key);
     }
@@ -42,31 +37,26 @@ const Sidebar = ({ collapsed }) => {
       <Menu
         theme="dark"
         mode="inline"
-        defaultSelectedKeys={['1']}
+        defaultSelectedKeys={[location.pathname]}
         onClick={handleMenuClick}
-        items={[
-          {
-            key: '/',
-            icon: <UserOutlined />,
-            label: 'Home',
-          },
-          {
-            key: '/quizzes',
-            icon: <FileTextOutlined />,
-            label: 'Quizzes',
-          },
-          {
-            key: `/submissions?quizId=${quizId}`,
-            icon: <InboxOutlined />,
-            label: 'Submissions',
-          },
-          {
-            key: 'logout',
-            icon: <LogoutOutlined />,
-            label: 'LogOut',
-          },
-        ]}
-      />
+      >
+        <Menu.Item key="/">
+          <UserOutlined />
+          Home
+        </Menu.Item>
+        <Menu.Item key="/quizzes">
+          <FileTextOutlined />
+          Quizzes
+        </Menu.Item>
+        <Menu.Item key={'/submissions'}>
+          <InboxOutlined />
+          Submissions
+        </Menu.Item>
+        <Menu.Item key="logout" onClick={handleLogout}>
+          <LogoutOutlined />
+          LogOut
+        </Menu.Item>
+      </Menu>
     </Sider>
   );
 };
