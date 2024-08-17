@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Axios instance for authenticated requests
 const authApi = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3003/api',
+  baseURL: process.env.REACT_BACKEND_API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -11,7 +11,7 @@ const authApi = axios.create({
 
 // Axios instance for non-authenticated requests
 const nonAuthApi = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3003/api',
+  baseURL: process.env.REACT_BACKEND_API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
