@@ -1,8 +1,6 @@
 // src/utils/api.js
 import axios from "axios";
 
-axios.defaults.withCredentials = true;
-
 // Axios instance for authenticated requests
 const authApi = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_API_URL,
