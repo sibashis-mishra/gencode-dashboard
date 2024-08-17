@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Spin, message, Card, Button, Input, DatePicker, Select, Tooltip, Modal } from 'antd';
-import { get } from '../utils/api'; // Assuming you have a `get` function in your API utility
+import { message, Spin } from 'antd';
+import { get } from '../utils/api';
 import { useLocation, useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { ArrowLeftOutlined, FilterOutlined, FileExcelOutlined, FilePdfOutlined, BarChartOutlined, ReloadOutlined } from '@ant-design/icons';
-import { PieChart, Pie, Tooltip as RechartsTooltip, Cell } from 'recharts';
-import '../styles/submissions.css'; // Import the CSS file
 import dayjs from 'dayjs';
-import isBetween from 'dayjs/plugin/isBetween'; // Import the isBetween plugin
-import advancedFormat from 'dayjs/plugin/advancedFormat'; // Import the advancedFormat plugin for other functionalities
+import isBetween from 'dayjs/plugin/isBetween';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import HeaderControls from './HeaderControls';
+import FiltersModal from './FiltersModal';
+import ScoreDistributionModal from './ScoreDistributionModal';
+import SubmissionsTable from './SubmissionsTable';
+import '../styles/submissions.css';
 
-dayjs.extend(isBetween); // Extend dayjs with the isBetween plugin
-dayjs.extend(advancedFormat); // Extend dayjs with advancedFormat if needed
-
-const { RangePicker } = DatePicker;
-const { Option } = Select;
+dayjs.extend(isBetween);
+dayjs.extend(advancedFormat);
 
 const Submissions = () => {
   const location = useLocation();
@@ -34,30 +33,29 @@ const Submissions = () => {
   const [selectedQuizName, setSelectedQuizName] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [showScoreDistribution, setShowScoreDistribution] = useState(false);
-  const [scoreDistribution, setScoreDistribution] = useState({}); // Added state for score distribution
+  const [scoreDistribution, setScoreDistribution] = useState({});
 
   useEffect(() => {
     fetchSubmissions();
   }, [quizId]);
 
   useEffect(() => {
-    // Filter data based on search text, date range, score range, and quiz name
     const applyFilters = () => {
       let data = [...submissions];
-      
+
       if (searchText) {
         data = data.filter(item =>
           item.user.toLowerCase().includes(searchText.toLowerCase())
         );
       }
-      
+
       if (dateRange[0] && dateRange[1]) {
         data = data.filter(item => {
           const submissionDate = dayjs(item.submittedAt);
           return submissionDate.isBetween(dayjs(dateRange[0]), dayjs(dateRange[1]), 'day', '[]');
         });
       }
-      
+
       if (minScore !== null && maxScore !== null) {
         data = data.filter(item =>
           item.score >= minScore && item.score <= maxScore
@@ -69,15 +67,11 @@ const Submissions = () => {
       }
 
       setFilteredData(data);
-      setScoreDistribution(calculateScoreDistribution(data)); // Update score distribution
+      setScoreDistribution(calculateScoreDistribution(data));
     };
-    
+
     applyFilters();
   }, [searchText, dateRange, minScore, maxScore, selectedQuizName, submissions]);
-
-  const handleBackToQuizzes = () => {
-    navigate('/quizzes');
-  };
 
   const fetchSubmissions = async () => {
     setLoading(true);
@@ -87,112 +81,21 @@ const Submissions = () => {
 
       const submissionsWithQuizName = response.data.map(submission => ({
         ...submission,
-        quizName: submission.quiz ? submission.quiz.title : '[Deleted]', // Handle missing quiz
+        quizName: submission.quiz ? submission.quiz.title : '[Deleted]',
       }));
 
       setSubmissions(submissionsWithQuizName);
       setFilteredData(submissionsWithQuizName);
-      setShowBackButton(!!quizId); // Show back button if quizId exists
+      setShowBackButton(!!quizId);
     } catch (error) {
-      console.error('Failed to fetch submissions', error);
       message.error('Failed to load submissions');
     } finally {
       setLoading(false);
     }
   };
 
-  // Calculate score distribution
-  const calculateScoreDistribution = (data) => {
-    const distribution = {};
-    data.forEach(submission => {
-      const score = submission.score;
-      if (distribution[score]) {
-        distribution[score] += 1;
-      } else {
-        distribution[score] = 1;
-      }
-    });
-    return distribution;
-  };
-
-  const distributionEntries = Object.entries(scoreDistribution)
-    .map(([score, count]) => ({
-      score: Number(score),
-      count,
-    }))
-    .sort((a, b) => b.score - a.score); // Sort by score in descending order
-
-  // Define columns conditionally
-  const columns = [
-    ...(quizId ? [] : [{
-      title: 'Quiz Name',
-      dataIndex: 'quizName',
-      key: 'quizName',
-      sorter: (a, b) => a.quizName.localeCompare(b.quizName), // Sort alphabetically
-      filters: Array.from(new Set(submissions.map(sub => sub.quizName)))
-        .map(quizName => ({ text: quizName, value: quizName })),
-      onFilter: (value, record) => record.quizName === value,
-    }]),
-    {
-      title: 'Name',
-      dataIndex: 'user',
-      key: 'user',
-      sorter: (a, b) => a.user.localeCompare(b.user), // Sort alphabetically
-    },
-    {
-      title: 'Score',
-      dataIndex: 'score',
-      key: 'score',
-      sorter: (a, b) => a.score - b.score, // Sort by score, low to high
-    },
-    {
-      title: 'Submission Date',
-      dataIndex: 'submittedAt',
-      key: 'submittedAt',
-      sorter: (a, b) => new Date(a.submittedAt) - new Date(b.submittedAt), // Sort by date, recent to last
-      render: text => {
-        const date = new Date(text);
-        return isNaN(date.getTime()) ? 'Invalid Date' : date.toLocaleString();
-      },
-    },
-  ];
-
-  const handleExportExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(filteredData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Submissions');
-    XLSX.writeFile(wb, 'submissions.xlsx');
-  };
-
-  const handleExportPDF = () => {
-    const doc = new jsPDF();
-    const tableColumn = [
-      ...(quizId ? [] : ["Quiz Name"]),
-      "Name",
-      "Score",
-      "Submission Date"
-    ];
-    const tableRows = filteredData.map(submission => [
-      ...(quizId ? [] : submission.quizName),
-      submission.user,
-      submission.score,
-      new Date(submission.submittedAt).toLocaleString(),
-    ]);
-
-    doc.autoTable(tableColumn, tableRows, { margin: { top: 20 } });
-    doc.save('submissions.pdf');
-  };
-
-  const handleQuizNameChange = (value) => {
-    if (value === 'all') {
-      setSelectedQuizName(''); // Reset the filter
-    } else {
-      setSelectedQuizName(value); // Set the selected quiz name
-    }
-  };
-
   const handleRefresh = () => {
-    fetchSubmissions(); // Re-fetch submissions
+    fetchSubmissions();
   };
 
   const handleShowFilters = () => {
@@ -211,151 +114,104 @@ const Submissions = () => {
     setShowScoreDistribution(false);
   };
 
-  if (loading) {
-    return <Spin size="large" />;
-  }
+  const handleExportExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Submissions');
+    XLSX.writeFile(workbook, 'submissions.xlsx');
+  };
+
+  const handleExportPDF = () => {
+    const doc = new jsPDF();
+    doc.autoTable({
+      head: [['Name', 'Quiz', 'Score', 'Date']],
+      body: filteredData.map(submission => [
+        submission.user,
+        submission.quizName,
+        submission.score,
+        dayjs(submission.submittedAt).format('MMMM Do YYYY, h:mm A'),
+      ]),
+    });
+    doc.save('submissions.pdf');
+  };
+
+  const calculateScoreDistribution = (data) => {
+    const distribution = data.reduce((acc, submission) => {
+      acc[submission.score] = (acc[submission.score] || 0) + 1;
+      return acc;
+    }, {});
+
+    return Object.entries(distribution).map(([score, count]) => ({
+      score: Number(score),
+      count,
+    }));
+  };
+
+  const columns = [
+    {
+      title: 'Name',
+      dataIndex: 'user',
+      key: 'user',
+      sorter: (a, b) => a.user.localeCompare(b.user),
+    },
+    {
+      title: 'Quiz',
+      dataIndex: 'quizName',
+      key: 'quizName',
+      sorter: (a, b) => a.quizName.localeCompare(b.quizName),
+      render: (_, record) => (quizId ? null : record.quizName),
+    },
+    {
+      title: 'Score',
+      dataIndex: 'score',
+      key: 'score',
+      sorter: (a, b) => b.score - a.score,
+    },
+    {
+      title: 'Date',
+      dataIndex: 'submittedAt',
+      key: 'submittedAt',
+      sorter: (a, b) => dayjs(b.submittedAt).diff(dayjs(a.submittedAt)),
+      render: date => dayjs(date).format('MMMM Do YYYY, h:mm A'),
+    },
+  ];
 
   return (
-    <div className="submissions-container">
-      {showBackButton && (
-        <Button
-          icon={<ArrowLeftOutlined />}
-          onClick={handleBackToQuizzes}
-          style={{ marginBottom: 20 }}
-        >
-          Back to Quizzes
-        </Button>
-      )}
-      <div className="header-controls">
-        <div className="total-submissions">
-          Total Submissions: {filteredData.length}
-        </div>
-        <div className="action-buttons">
-          <Tooltip title="Refresh Data">
-            <Button
-              icon={<ReloadOutlined />}
-              onClick={handleRefresh} 
-              className="action-button"
-            />
-          </Tooltip>
-          <Tooltip title="Show Filters">
-            <Button
-              icon={<FilterOutlined />}
-              onClick={handleShowFilters}
-              className="action-button"
-            />
-          </Tooltip>
-          <Tooltip title="Show Score Distribution">
-            <Button
-              icon={<BarChartOutlined />}
-              onClick={handleShowScoreDistribution}
-              className="action-button"
-            />
-          </Tooltip>
-          <Tooltip title="Export to PDF">
-            <Button
-              icon={<FilePdfOutlined />}
-              onClick={handleExportPDF}
-              className="action-button"
-            />
-          </Tooltip>
-          <Tooltip title="Export to Excel">
-            <Button
-              icon={<FileExcelOutlined />}
-              onClick={handleExportExcel}
-              className="action-button"
-            />
-          </Tooltip>
-        </div>
+    <Spin spinning={loading}>
+      <div className="submissions-page">
+        <HeaderControls
+          showBackButton={showBackButton}
+          handleBackToQuizzes={() => navigate('/quizzes')}
+          handleRefresh={handleRefresh}
+          handleShowFilters={handleShowFilters}
+          handleShowScoreDistribution={handleShowScoreDistribution}
+          handleExportPDF={handleExportPDF}
+          handleExportExcel={handleExportExcel}
+          totalSubmissions={filteredData.length}
+        />
+        <FiltersModal
+          showFilters={showFilters}
+          handleCloseFilters={handleCloseFilters}
+          searchText={searchText}
+          setSearchText={setSearchText}
+          dateRange={dateRange}
+          setDateRange={setDateRange}
+          minScore={minScore}
+          setMinScore={setMinScore}
+          maxScore={maxScore}
+          setMaxScore={setMaxScore}
+          selectedQuizName={selectedQuizName}
+          handleQuizNameChange={setSelectedQuizName}
+          submissions={submissions}
+        />
+        <ScoreDistributionModal
+          showScoreDistribution={showScoreDistribution}
+          handleCloseScoreDistribution={handleCloseScoreDistribution}
+          distributionEntries={scoreDistribution}
+        />
+        <SubmissionsTable columns={columns} filteredData={filteredData} />
       </div>
-
-      {/* Filters Modal */}
-      <Modal
-        title="Filters"
-        visible={showFilters}
-        onCancel={handleCloseFilters}
-        footer={null}
-        className="filters-modal"
-      >
-        <Input
-          placeholder="Search by name"
-          onChange={e => setSearchText(e.target.value)}
-          value={searchText}
-          className="filter-field"
-        />
-        <RangePicker
-          onChange={dates => setDateRange(dates)}
-          value={dateRange}
-          className="filter-field"
-        />
-        <Input
-          placeholder="Min Score"
-          type="number"
-          onChange={e => setMinScore(Number(e.target.value))}
-          value={minScore !== null ? minScore : ''}
-          className="filter-field"
-        />
-        <Input
-          placeholder="Max Score"
-          type="number"
-          onChange={e => setMaxScore(Number(e.target.value))}
-          value={maxScore !== null ? maxScore : ''}
-          className="filter-field"
-        />
-        <Select
-          placeholder="Select Quiz"
-          onChange={handleQuizNameChange}
-          value={selectedQuizName || 'all'}
-          style={{ width: '100%' }}
-          className="filter-field"
-        >
-          <Option value="all">All Quizzes</Option>
-          {[...new Set(submissions.map(sub => sub.quizName))].map(quizName => (
-            <Option key={quizName} value={quizName}>{quizName}</Option>
-          ))}
-        </Select>
-      </Modal>
-
-      {/* Score Distribution Modal */}
-      <Modal
-        title="Score Distribution"
-        visible={showScoreDistribution}
-        onCancel={handleCloseScoreDistribution}
-        footer={null}
-        className="score-distribution-modal"
-      >
-        {distributionEntries.length ? (
-          <div className="pie-chart-container">
-            <PieChart width={500} height={400}>
-              <Pie
-                data={distributionEntries}
-                dataKey="count"
-                nameKey="score"
-                cx="50%"
-                cy="50%"
-                outerRadius={150}
-                fill="#8884d8"
-                label={({ name, value }) => `${name}: ${value}`}
-              >
-                {distributionEntries.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#0088FE' : '#00C49F'} />
-                ))}
-              </Pie>
-              <RechartsTooltip />
-            </PieChart>
-          </div>
-        ) : (
-          <p>No score distribution available</p>
-        )}
-      </Modal>
-
-      <Table
-        columns={columns}
-        dataSource={filteredData}
-        rowKey="id"
-        pagination={true}
-      />
-    </div>
+    </Spin>
   );
 };
 
