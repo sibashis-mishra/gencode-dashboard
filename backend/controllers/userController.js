@@ -38,3 +38,17 @@ exports.loginUser = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+exports.validateToken = async (req, res) => {
+  try {
+    const { token } = req.body;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    res.json({ user });
+  } catch (error) {
+    res.status(401).json({ message: 'Token validation failed' });
+  }
+}

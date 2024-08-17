@@ -1,0 +1,23 @@
+/* src/styles/register.css */
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Full viewport height */
+    background-color: #f0f2f5; /* Optional: background color */
+  }
+  
+  .register-form-wrapper {
+    max-width: 300px;
+    width: 100%;
+    padding: 20px;
+    background: #fff; /* Optional: background color for the form */
+    border-radius: 8px; /* Optional: rounded corners for the form */
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1); /* Optional: shadow for the form */
+  }
+  
+  .register-button-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+  
