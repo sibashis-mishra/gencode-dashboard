@@ -154,13 +154,15 @@ const Submissions = () => {
       key: 'user',
       sorter: (a, b) => a.user.localeCompare(b.user),
     },
-    {
-      title: 'Quiz',
-      dataIndex: 'quizName',
-      key: 'quizName',
-      sorter: (a, b) => a.quizName.localeCompare(b.quizName),
-      render: (_, record) => (quizId ? null : record.quizName),
-    },
+    quizId
+    ? {} // If quizId is present, return null (which will be filtered out)
+    : {
+        title: 'Quiz',
+        dataIndex: 'quizName',
+        key: 'quizName',
+        sorter: (a, b) => a.quizName.localeCompare(b.quizName),
+        render: (_, record) => record.quizName,
+      },
     {
       title: 'Score',
       dataIndex: 'score',
