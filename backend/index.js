@@ -14,9 +14,8 @@ const port = process.env.PORT || 5000;
 app.use(
   cors({
     origin: [
-      process.env.LOCAL_FRONTEND_URL,
-      process.env.PROD_FRONTEND_URL,
-      "https://gencode-dashboard.vercel.app",
+      "https://gencode-dashboard.vercel.app/",
+      "http://localhost:3000"
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
