@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { ArrowLeftOutlined, FilterOutlined, FileExcelOutlined, FilePdfOutlined, BarChartOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, FilterOutlined, FileExcelOutlined, FilePdfOutlined, BarChartOutlined, ReloadOutlined } from '@ant-design/icons';
 import { PieChart, Pie, Tooltip as RechartsTooltip, Cell } from 'recharts';
 import '../styles/submissions.css'; // Import the CSS file
 import dayjs from 'dayjs';
@@ -37,28 +37,6 @@ const Submissions = () => {
   const [scoreDistribution, setScoreDistribution] = useState({}); // Added state for score distribution
 
   useEffect(() => {
-    const fetchSubmissions = async () => {
-      setLoading(true);
-      try {
-        const endpoint = quizId ? `/submissions/quizzes/${quizId}` : '/submissions';
-        const response = await get(endpoint);
-
-        const submissionsWithQuizName = response.data.map(submission => ({
-          ...submission,
-          quizName: submission.quiz ? submission.quiz.title : '[Deleted]', // Handle missing quiz
-        }));
-
-        setSubmissions(submissionsWithQuizName);
-        setFilteredData(submissionsWithQuizName);
-        setShowBackButton(!!quizId); // Show back button if quizId exists
-      } catch (error) {
-        console.error('Failed to fetch submissions', error);
-        message.error('Failed to load submissions');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchSubmissions();
   }, [quizId]);
 
@@ -99,6 +77,28 @@ const Submissions = () => {
 
   const handleBackToQuizzes = () => {
     navigate('/quizzes');
+  };
+
+  const fetchSubmissions = async () => {
+    setLoading(true);
+    try {
+      const endpoint = quizId ? `/submissions/quizzes/${quizId}` : '/submissions';
+      const response = await get(endpoint);
+
+      const submissionsWithQuizName = response.data.map(submission => ({
+        ...submission,
+        quizName: submission.quiz ? submission.quiz.title : '[Deleted]', // Handle missing quiz
+      }));
+
+      setSubmissions(submissionsWithQuizName);
+      setFilteredData(submissionsWithQuizName);
+      setShowBackButton(!!quizId); // Show back button if quizId exists
+    } catch (error) {
+      console.error('Failed to fetch submissions', error);
+      message.error('Failed to load submissions');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Calculate score distribution
@@ -191,6 +191,10 @@ const Submissions = () => {
     }
   };
 
+  const handleRefresh = () => {
+    fetchSubmissions(); // Re-fetch submissions
+  };
+
   const handleShowFilters = () => {
     setShowFilters(true);
   };
@@ -227,6 +231,13 @@ const Submissions = () => {
           Total Submissions: {filteredData.length}
         </div>
         <div className="action-buttons">
+          <Tooltip title="Refresh Data">
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={handleRefresh} 
+              className="action-button"
+            />
+          </Tooltip>
           <Tooltip title="Show Filters">
             <Button
               icon={<FilterOutlined />}
