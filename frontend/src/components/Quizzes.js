@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Spin, message } from 'antd';
+import { Row, Col, Spin, message, Modal } from 'antd';
 import QuizCard from './QuizCard';
 import CreateQuizCard from './CreateQuizCard';
-import { get, post } from '../utils/api';
+import { del, get, post } from '../utils/api';
 
 const Quizzes = () => {
   const [quizzes, setQuizzes] = useState([]);
@@ -56,8 +56,23 @@ const Quizzes = () => {
   };
 
   const handleDelete = (id) => {
-    // Call API to delete the quiz
-    // Update the state to remove the deleted quiz
+    Modal.confirm({
+      title: 'Are you sure you want to delete this quiz?',
+      content: 'This action cannot be undone.',
+      okText: 'Yes, delete it',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          await del(`/quizzes/${id}`); // Use the del function to delete the quiz
+          message.success('Quiz deleted successfully!');
+          setQuizzes(prevQuizzes => prevQuizzes.filter(quiz => quiz._id !== id)); // Remove the deleted quiz from the state
+        } catch (error) {
+          console.error('Failed to delete quiz', error);
+          message.error('Failed to delete quiz');
+        }
+      }
+    });
   };
 
   const handleShare = (id) => {

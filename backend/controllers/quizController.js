@@ -66,3 +66,20 @@ exports.getQuizById = async (req, res) => {
    'Server error' });
     }
   };
+
+  exports.deleteQuiz = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      const quiz = await Quiz.findByIdAndDelete(id);
+  
+      if (!quiz) {
+        return res.status(404).json({ message: 'Quiz not found' });
+      }
+  
+      res.json({ message: 'Quiz deleted successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
