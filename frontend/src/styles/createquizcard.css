@@ -1,0 +1,31 @@
+.create-quiz-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border: 2px dotted; /* Dotted border by default */
+    transition: border 0.3s ease; /* Smooth transition for border change */
+  }
+  
+  .create-quiz-card:hover {
+    border: 2px solid; /* Solid border on hover */
+  }
+  
+  .create-quiz-card-button {
+    font-size: 24px;
+    color: #fff;
+    background-color: #1890ff;
+    border: none;
+  }
+  
+  .create-quiz-card-button:hover {
+    background-color: #40a9ff;
+  }
+  
+  .create-quiz-card-text {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #666;
+  }
+  

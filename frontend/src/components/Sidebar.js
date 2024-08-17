@@ -45,7 +45,7 @@ const Sidebar = ({ collapsed }) => {
             label: 'Home',
           },
           {
-            key: '/page2',
+            key: '/quizzes',
             icon: <FileTextOutlined />,
             label: 'Quizzes',
           },
