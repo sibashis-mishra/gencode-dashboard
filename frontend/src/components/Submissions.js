@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Spin, message, Card, Button } from 'antd';
 import { get } from '../utils/api'; // Assuming you have a `get` function in your API utility
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -9,13 +9,16 @@ import '../styles/submissions.css'; // Import the CSS file
 
 const Submissions = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const quizId = queryParams.get('quizId');
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showBackButton, setShowBackButton] = useState(false);
 
   useEffect(() => {
     const fetchSubmissions = async () => {
+      setLoading(true);
       try {
         const endpoint = quizId ? `/submissions/quizzes/${quizId}` : '/submissions';
         const response = await get(endpoint);
@@ -27,6 +30,7 @@ const Submissions = () => {
         }));
   
         setSubmissions(submissionsWithQuizName);
+        setShowBackButton(!!quizId); // Show back button if quizId exists
       } catch (error) {
         console.error('Failed to fetch submissions', error);
         message.error('Failed to load submissions');
@@ -37,7 +41,11 @@ const Submissions = () => {
   
     fetchSubmissions();
   }, [quizId]);
-  
+
+  const handleBackToQuizzes = () => {
+    navigate('/quizzes');
+  };
+
   // Calculate score distribution
   const calculateScoreDistribution = () => {
     const distribution = {};
@@ -127,6 +135,15 @@ const Submissions = () => {
 
   return (
     <div className="submissions-container">
+      {showBackButton && (
+        <Button
+          type="primary"
+          onClick={handleBackToQuizzes}
+          className="back-to-quizzes-button"
+        >
+          Back to Quizzes
+        </Button>
+      )}
       <Card
         title="Score Distribution"
         className="score-distribution-card"

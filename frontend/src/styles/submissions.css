@@ -28,3 +28,8 @@
   margin-bottom: 8px;
   font-size: 18px; /* Adjust font size as needed */
 }
+
+/* styles/submissions.css */
+.back-to-quizzes-button {
+  margin-bottom: 16px;
+}
