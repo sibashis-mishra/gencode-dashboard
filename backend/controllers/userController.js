@@ -10,7 +10,7 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
     const newUser = new User({ name, email, password });
-    const savedUser = await newUser.save();
+    const savedUser = await newUser.save()
     // Generate JWT token
     const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET);
     res.status(201).json({ user: savedUser, token });
